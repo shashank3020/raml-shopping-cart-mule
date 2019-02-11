@@ -63,6 +63,7 @@ Shopping Cart API
 ### Architectural StandPoints
   * RAML Design is basically to show how things can be designed in modular way
   * Security Scheme is not used, instead we going with Basic JWT Token Authentication, alternate could be Basic Authentication, ClientId/ClientSecret if host on Anypoint, OAuth
+  * Good Practise and nice to have would be to create a Custom Policy for JWT Authentication.
   * Ideally in an Org, we should not be looking at RAML from Project perspective, but its a Org wide asset and needs to be reused.
   * Only Specific set of People should be designing RAML, else we can land in situation that, even with all Modularity we are still duplicating, as at times coding is better than Searching what others has written
   * Mule Application is very basic, but it tells how flows should be designed, small but doing what it needs to.
