@@ -1,0 +1,14 @@
+#%RAML 1.0 ResourceType
+
+usage: This resourceType could be used for a generic collection driven operations of related topology
+description: Collection of <<resourcePathName>>
+displayName: Shopping Cart Collection ResourceType
+uses:
+  tr: ../library/TraitsLibrary.raml
+  datatypelib: ../library/ShoppingCartDatatypeLibrary.raml
+post?:
+  description: Creates a new <<resourcePathName | !singularize | !uppercase>>
+  is: [tr.Auth, tr.ReqCollection, tr.RespCollection]
+  # body:
+  #   application/json:
+  #     type: datatypelib.shoppingCartCollection

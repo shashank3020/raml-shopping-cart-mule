@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:objectstore="http://www.mulesoft.org/schema/mule/objectstore"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/objectstore http://www.mulesoft.org/schema/mule/objectstore/current/mule-objectstore.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <flow name="update-shoppingcartFlow">
+    	<dw:transform-message doc:name="save input to updateShoppingCart">
+            <dw:set-variable variableName="updateShoppingCart"><![CDATA[%dw 1.0
+%output application/java
+---
+payload]]></dw:set-variable>
+            <dw:set-variable variableName="items"><![CDATA[%dw 1.0
+%output application/java
+---
+[]]]></dw:set-variable>
+        </dw:transform-message>
+        <flow-ref name="jwt-authenticationFlow" doc:name="Ref: JWT Authentication"/>
+        <message-filter onUnaccepted="jwt-parse-exit-flow" doc:name="Filter If JWT Check Fails">
+            <expression-filter expression="#[flowVars.jwtCheckStatus]" nullReturnsTrue="true"/>
+        </message-filter>
+        <objectstore:contains config-ref="ObjectStore_Connector" key="#[flowVars.shoppingCartId]" doc:name="Contains shopping cart"/>
+        <choice doc:name="Does shopping cart exist?">
+            <when expression="#[payload == true]">
+                <objectstore:retrieve config-ref="ObjectStore_Connector" key="#[flowVars.shoppingCartId]" doc:name="Retrieve shopping cart"/>
+                <dw:transform-message doc:name="Mapping shopping cart">
+                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+	shoppingCartId: flowVars.shoppingCartId, 
+	customerId: payload.customerId,
+	items: flowVars.updateShoppingCart.items
+}]]></dw:set-payload>
+                </dw:transform-message>
+
+                <objectstore:store config-ref="ObjectStore_Connector" key="#[flowVars.shoppingCartId]" value-ref="#[payload]" overwrite="true" doc:name="Overwrite shopping cart"/>
+                <dw:transform-message doc:name="Response message">
+                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	message: "Shopping cart was updated"
+}]]></dw:set-payload>
+                </dw:transform-message>
+            </when>
+            <otherwise>
+                <dw:transform-message doc:name="Status 404">
+                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	error: "Shopping cart not found"
+}]]></dw:set-payload>
+                    <dw:set-property propertyName="http.status"><![CDATA[%dw 1.0
+%output application/java
+---
+404]]></dw:set-property>
+                </dw:transform-message>
+            </otherwise>
+        </choice>
+    </flow>
+</mule>

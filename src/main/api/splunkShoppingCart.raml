@@ -1,0 +1,117 @@
+#%RAML 1.0
+baseUri: https://anypoint.mulesoft.com/mocking/api/v1/links/9eb6bcf8-eaa6-43b6-9ad2-4834c229f852/ # 
+title: Shopping Cart
+protocols: [HTTP]
+version: 1.0
+mediaType: [application/json]
+description: API for Shopping Cart
+
+documentation:
+  - !include documentation/splunkShoppingCartHeadline.raml
+  - !include documentation/splunkApiDoc.raml
+
+uses:
+  shoppingCartTypes: /library/ShoppingCartDatatypeLibrary.raml
+  collectionLibrary: /library/ResourceTypeLibrary.raml
+  tr: /library/TraitsLibrary.raml
+
+# resourceTypes:
+#   collection: !include ../resourcetypes/collection.raml
+
+# traits:
+#   hasRequestCollection: !include  traits/hasRequestCollection.raml
+#   hasResponseCollection: !include  traits/hasResponseCollection.raml
+
+# types:
+#   ShoppingCartMemberType: !include datatypes/shopping_cart_datatype_collection.raml
+
+# resourceTypes:
+#   collection:
+#     usage: This resourceType could be used for a generic collection driven operations of related topology
+#     description: Collection of <<resourcePathName>>
+#     displayName: Shopping Cart Collection ResourceType
+#     post:
+#       description: Creates a new <<resourcePathName | !singularize | !uppercase>>
+#       is: [hasRequestCollection, hasResponseCollection]
+
+# traits:
+#   hasRequestCollection:
+#     body:
+#       application/json:
+#         #type: shoppingCartTypes.shoppingCartCollection
+#         type: << typeName >>
+#         example: !include examples/ShoppingCarts.json
+#   hasResponseCollection:
+#     responses:
+#       200:
+#         body:
+#           application/json:
+#             examples: !include examples/ShoppingCartSuccessExample.raml
+
+
+
+/shoppingCarts:
+  type: 
+    collectionLibrary.collection:
+    #collection:
+      #typeName: shoppingCartTypes.shoppingCartCollection
+  post:
+
+  /{shoppingCartId}:
+    get:
+      is: [tr.Auth]
+      responses:
+        200:
+          body:
+            application/json:
+              type: shoppingCartTypes.shoppingCartMember
+              example: !include examples/ShoppingCart.json
+    put:
+      is: [tr.Auth]
+      displayName:
+      description:
+      body:
+        application/json:
+          type: shoppingCartTypes.shoppingCartMember
+          example: !include examples/ShoppingCart.json
+      responses:
+        200:
+          body:
+            application/json:
+              type: shoppingCartTypes.shoppingCartMember
+              example: !include examples/ShoppingCart.json
+        404:
+          body: 
+            application/json:
+              #type: shoppingCartTypes.shoppingCartError
+              examples: !include examples/ShoppingCartErrorExample.raml
+
+    delete:
+      is: [tr.Auth]
+      displayName: Delete shopping cart
+      description: Deleting shopping cart
+      responses:
+        200:
+          body:
+            application/json: 
+              examples: !include examples/ShoppingCartDeleteSuccessExample.raml
+        404:
+          body: 
+            application/json:
+              examples: !include examples/ShoppingCartErrorExample.raml
+
+/customers:
+  /{customerId}:
+    /shoppingCarts:
+      get:
+        is: [tr.Auth]
+        displayName: Retrieve shopping carts of a customer
+        description: Return Shopping Carts associated with a customer
+        responses:
+            200:
+              body:
+                application/json:
+                  #type: shoppingCartTypes.shoppingCartCollection
+                  example: !include examples/ShoppingCarts.json
+        
+          

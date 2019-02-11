@@ -1,0 +1,20 @@
+
+          [
+            {
+              "customerId"  : "cus0001",
+                "items" : [
+                  {
+                    "itemId"          : "SI0001",
+                    "itemName"        : "Splunk Light",
+                    "itemDescription" : "The comprehensive solution for small IT environments looking to automate log search and analysis.",
+                    "quantity"        : 2
+                  },
+                  {
+                    "itemId"          : "SI0002",
+                    "itemName"        : "Splunk Cloud",
+                    "itemDescription" : "Deploy Splunk securely, reliably and scalably as a service. No infrastructure required.",
+                    "quantity"        : 2
+                  }
+                ]
+              }
+          ]

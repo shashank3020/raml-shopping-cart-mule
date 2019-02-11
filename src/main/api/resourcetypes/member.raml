@@ -1,0 +1,11 @@
+#%RAML 1.0 ResourceType
+
+usage: This resourceType could be used for a generic member driven operations of related topology
+description: Get <<resourcePathName>>
+displayName: Shopping Cart <<resourcePathName>>
+uses:
+  tr: ../library/TraitsLibrary.raml
+  datatypelib: ../library/ShoppingCartDatatypeLibrary.raml
+get?:
+  description: Get <<resourcePathName | !singularize | !uppercase>>
+  is: [tr.Auth]

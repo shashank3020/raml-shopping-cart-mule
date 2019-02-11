@@ -1,0 +1,9 @@
+#%RAML 1.0 Library
+usage: |
+  Reusable Traits Library
+
+traits:
+  Auth: !include ../traits/hasAuthHeaders.raml
+  ReqCollection: !include ../traits/hasRequestCollection.raml
+  RespCollection: !include ../traits/hasResponseCollection.raml
+        

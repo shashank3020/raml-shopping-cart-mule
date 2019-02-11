@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <flow name="jwt-authenticationFlow">
+    	<set-payload value="#[message.inboundProperties['Authorization'].substring(message.inboundProperties['Authorization'].indexOf(' ') + 1)]" doc:name="Payload to Authorization Token"/>
+        <flow-ref name="parse-jwt-tokenFlow" doc:name="JWT Parse Ref"/>
+        <message-filter doc:name="Filter If Token Parsing Fails" onUnaccepted="jwt-parse-exit-flow">
+            <expression-filter expression="#[flowVars.parstJWTTokenStatus]" nullReturnsTrue="true"/>
+        </message-filter>
+        <flow-ref name="validate-jwt-tokenFlow" doc:name="Validate JWT Token Flow Ref"/>
+        <message-filter doc:name="Filter If Token Validation Fails" onUnaccepted="jwt-parse-exit-flow">
+            <expression-filter expression="#[flowVars.validationStatus]" nullReturnsTrue="true"/>
+        </message-filter>
+        <catch-exception-strategy doc:name="Catch Exception Strategy">
+            <set-variable variableName="jwtCheckStatus" value="#[false]" doc:name="Jwt Authentication Status"/>
+            <set-variable variableName="message" value="JWT Authentication Failed" doc:name="Error Message"/>
+            <logger message="JWT Authentication Failed" level="ERROR" doc:name="Logger"/>
+        </catch-exception-strategy>
+    </flow>
+</mule>

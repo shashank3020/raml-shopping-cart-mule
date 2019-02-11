@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+    
+    <flow name="splunkShoppingCart-main">
+        <http:listener config-ref="splunkShoppingCart-httpListenerConfig" path="/api/*" doc:name="HTTP"/>
+        <apikit:router config-ref="splunkShoppingCart-config" doc:name="APIkit Router"/>
+        <exception-strategy ref="splunkShoppingCart-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
+    </flow>
+    <flow name="splunkShoppingCart-console">
+        <http:listener config-ref="splunkShoppingCart-httpListenerConfig" path="/console/*" doc:name="HTTP"/>
+        <apikit:console config-ref="splunkShoppingCart-config" doc:name="APIkit Console"/>
+    </flow>
+    <flow name="put:/shoppingCarts/{shoppingCartId}:application/json:splunkShoppingCart-config">
+        <flow-ref name="update-shoppingcartFlow" doc:name="Ref: Update Shopping Cart"/>
+    </flow>
+    <flow name="delete:/shoppingCarts/{shoppingCartId}:splunkShoppingCart-config">
+        <set-payload value="{&#xA;&quot;message&quot; : &quot;Shopping Cart Deleted Successfully&quot;&#xA;}" doc:name="Set Payload"/>
+    </flow>
+    <flow name="get:/customers/{customerId}/shoppingCarts:splunkShoppingCart-config">
+        <set-payload value="[&#xA;            {&#xA;              &quot;customerId&quot;  : &quot;cus0001&quot;,&#xA;                &quot;items&quot; : [&#xA;                  {&#xA;                    &quot;itemId&quot;          : &quot;SI0001&quot;,&#xA;                    &quot;itemName&quot;        : &quot;Splunk Light&quot;,&#xA;                    &quot;itemDescription&quot; : &quot;The comprehensive solution for small IT environments looking to automate log search and analysis.&quot;,&#xA;                    &quot;quantity&quot;        : 2&#xA;                  },&#xA;                  {&#xA;                    &quot;itemId&quot;          : &quot;SI0002&quot;,&#xA;                    &quot;itemName&quot;        : &quot;Splunk Cloud&quot;,&#xA;                    &quot;itemDescription&quot; : &quot;Deploy Splunk securely, reliably and scalably as a service. No infrastructure required.&quot;,&#xA;                    &quot;quantity&quot;        : 2&#xA;                  }&#xA;                ]&#xA;              }&#xA;          ]" doc:name="Set Payload"/>
+    </flow>
+    <flow name="get:/shoppingCarts/{shoppingCartId}:splunkShoppingCart-config">
+        <flow-ref name="get-shoppingcartFlow" doc:name="Ref: Get Shopping Cart"/>
+    </flow>
+    <flow name="post:/shoppingCarts:application/json:splunkShoppingCart-config">
+        <flow-ref name="create-shoppingcartFlow" doc:name="Ref: Create Shopping Cart"/>
+    </flow>
+</mule>

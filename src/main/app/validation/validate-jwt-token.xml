@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <flow name="validate-jwt-tokenFlow">
+    	<message-properties-transformer scope="invocation" doc:name="RFC Details For R3 Call">
+            <add-message-property key="iss" value="#[payload.iss]"/>
+            <add-message-property key="sub" value="#[payload.sub]"/>
+            <add-message-property key="aud" value="#[payload.aud]"/>
+        </message-properties-transformer>
+        <validation:is-true config-ref="Validation_Configuration" message="JWT Token Validation Failed" expression="#[flowVars.jwtClaimData.sub=='shoppingcart' &amp;&amp; flowVars.jwtClaimData.aud=='splunk' &amp;&amp; flowVars.jwtClaimData.iss=='architect']" doc:name="JWT Claim Check"/>
+        <logger message="Token Validation was Successful" level="INFO" doc:name="Log"/>
+        <exception-strategy ref="generic_Catch_Exception_Strategy" doc:name="Reference Exception Strategy"/>
+    </flow>
+</mule>

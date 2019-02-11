@@ -1,0 +1,26 @@
+#%RAML 1.0 Library
+usage: |
+  Shopping Cart Library
+
+types:
+  #item: !include ../datatypes/item.raml
+    # properties:
+    #   itemId:
+    #     type: string
+    #   itemName:
+    #     type: string
+    #   itemDescription?:
+    #     type: string
+    #   quantity:
+    #     type: number
+  shoppingCartMember: !include ../datatypes/ShoppingCart.raml
+    # properties:
+    #   customerId: string
+    #   items:
+    #     type: item[]
+  shoppingCartCollection: !include ../datatypes/ShoppingCarts.raml
+    #type: shoppingCartMember[]
+
+  shoppingCartSuccessMsg: !include ../datatypes/splunk_success_datatype.raml
+
+  shoppingCartErrorMsg: !include ../datatypes//splunk_error_datatype.raml

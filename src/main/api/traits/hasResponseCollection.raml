@@ -1,0 +1,13 @@
+#%RAML 1.0 Trait
+#uses:
+#  datatypeLib:  ../library/ShoppingCartDatatypeLibrary.raml
+  
+responses:
+  200:
+    body:
+      application/json:
+        example: !include ../examples/ShoppingCartSuccessExample.json
+  400:
+    body:
+      application/json:
+        example: !include ..//examples//ShoppingCartBadRequestExample.json

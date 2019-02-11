@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:objectstore="http://www.mulesoft.org/schema/mule/objectstore"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd http://www.mulesoft.org/schema/mule/objectstore http://www.mulesoft.org/schema/mule/objectstore/current/mule-objectstore.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<http:listener-config name="splunkShoppingCart-httpListenerConfig" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
+    <apikit:config name="splunkShoppingCart-config" raml="splunkShoppingCart.raml" consoleEnabled="false" doc:name="Router"/>
+    <spring:beans>
+      <spring:bean name="standardObjectStoreBean_cache" id="standardObjectStoreBean_cache" class="org.mule.util.store.SimpleMemoryObjectStore" scope="singleton">  </spring:bean>
+    </spring:beans>
+    <objectstore:config name="ObjectStore_Connector"  objectStore-ref="standardObjectStoreBean_cache" doc:name="ObjectStore: Connector"/>
+    <validation:config name="Validation_Configuration"  doc:name="Validation Configuration"/>
+    <configuration doc:name="Base64 Decoder" >
+    	<expression-language>
+    		<global-functions>
+             	def base64decode(value) {
+             		System.out.println("Value recieved in global function is : " + value);
+                	var decodedString = java.util.Base64.getDecoder().decode(value);
+                	System.out.println("Decoded String is : " + decodedString);
+                	return decodedString;
+             	}
+			</global-functions>
+    	</expression-language>
+    </configuration>
+</mule>

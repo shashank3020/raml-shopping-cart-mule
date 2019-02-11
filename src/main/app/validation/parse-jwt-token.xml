@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <flow name="parse-jwt-tokenFlow">
+    	<dw:transform-message doc:name="JWT Token Splitter" >
+            <dw:set-variable variableName="jwtHeaderData"><![CDATA[%dw 1.0
+%output application/java
+---
+base64decode((payload splitBy ".")[0]) as :string]]></dw:set-variable>
+            <dw:set-variable variableName="jwtClaimData"><![CDATA[%dw 1.0
+%output application/java
+---
+base64decode((payload splitBy ".")[1]) as :string]]></dw:set-variable>
+        </dw:transform-message>
+        <set-payload value="#[flowVars.jwtClaimData]" mimeType="application/json" doc:name="Set Claim Data"/>
+        <dw:transform-message doc:name="Transform to Claims Map">
+            <dw:input-payload doc:sample="sample_data/string.dwl"/>
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload]]></dw:set-payload>
+            <dw:set-variable variableName="jwtClaimData"><![CDATA[%dw 1.0
+%output application/java
+---
+payload]]></dw:set-variable>
+        </dw:transform-message>
+        <logger message="Value of jwtHeader : #[flowVars.jwtHeaderData]  and  Value of jwtData : #[flowVars.jwtClaimData]" level="INFO" doc:name="Header and Claim Log"/>
+        <exception-strategy ref="Catch_Exception_Strategy_JWT_ParseFlow" doc:name="Reference Exception Strategy"/>
+    </flow>
+</mule>

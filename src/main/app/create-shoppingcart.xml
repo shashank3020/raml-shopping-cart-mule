@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:objectstore="http://www.mulesoft.org/schema/mule/objectstore"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/objectstore http://www.mulesoft.org/schema/mule/objectstore/current/mule-objectstore.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd">
+    <flow name="create-shoppingcartFlow">
+    	<dw:transform-message doc:name="Save Input">
+            <dw:set-variable variableName="shoppingCart"><![CDATA[%dw 1.0
+%output application/java
+---
+using(shoppingCart = payload[0])
+{
+	customerId: shoppingCart.customerId,
+	items: shoppingCart.items	
+}]]></dw:set-variable>
+        </dw:transform-message>
+        <flow-ref name="jwt-authenticationFlow" doc:name="Ref: JWT Authentication"/>
+        <message-filter onUnaccepted="jwt-parse-exit-flow" doc:name="Filter If JWT Check Fails">
+            <expression-filter expression="#[flowVars.jwtCheckStatus]" nullReturnsTrue="true"/>
+        </message-filter>
+        <logger message="#['Payload Received for Shopping Cart : ' +  message.payloadAs(java.lang.String)]" level="INFO" doc:name="Logger"/>
+        <set-variable variableName="shoppingCartID" value="#[function:uuid]" doc:name="UniqueId For Request"/>
+        <dw:transform-message doc:name="Mapping shopping cart">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+	shoppingCartId: flowVars.shoppingCartID,
+	customerId: flowVars.shoppingCart.customerId,
+	items: flowVars.shoppingCart.items
+}]]></dw:set-payload>
+        </dw:transform-message>
+
+        <objectstore:store config-ref="ObjectStore_Connector" key="#[flowVars.shoppingCartID]" value-ref="#[payload]" doc:name="Store shooping cart"/>
+        <dw:transform-message doc:name="Response Message">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	message: "Shopping Cart was created", 
+	shoppingCartId: flowVars.shoppingCartID
+}]]></dw:set-payload>
+        </dw:transform-message>
+        <catch-exception-strategy doc:name="Catch Exception Strategy">
+            <logger message="#['Shopping Cart Creation Failed']" level="ERROR" doc:name="Logger"/>
+            <set-variable variableName="message" value="Shopping Cart Creation Failed" doc:name="Error Message"/>
+            <flow-ref name="shopping-cart-creation-exit-flow" doc:name="Ref: Cart Creation Exit Flow"/>
+        </catch-exception-strategy>
+    </flow>
+</mule>
