@@ -1,6 +1,6 @@
 Shopping Cart API
 
-###API Security:
+### API Security:
   * Basic JWT Token Validation is Used.
   * Every Endpoint  will have JWT Authorization Token
   * Token can be generated from jwt.io and using aud=splunk and sub=shoppingcart and iss=architect, rest of the parameters do not matter at this point.
@@ -10,8 +10,9 @@ Shopping Cart API
 
 ### Running It:
  + Best way is to launch this application in Studio, use Console to hit the endpoint.
+ + Commented Lines in RAML, is to show inline use of ResourceType and Traits.
 
-###Create a Cart:
+### Create a Cart:
   If you need to use Postman
   * url : http://127.0.0.1:8081/api/shoppingCarts/
   * method : POST
@@ -54,7 +55,7 @@ Shopping Cart API
           ]
         }
 
-###Get Cart:
+### Get Cart:
   * url : http://127.0.0.1:8081/api/shoppingCarts/{shoppingCartId}
   * method : GET
   * Header Authorization : eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaG9wcGluZ2NhcnQiLCJhdWQiOiJzcGx1bmsiLCJpc3MiOiJhcmNoaXRlY3QiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjJ9.aTdXQvnO99sVZFnCRYXHLGpxjJU9rJwsroarcf4sFn8
