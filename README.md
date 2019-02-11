@@ -71,7 +71,7 @@ Shopping Cart API
 
 ### Alternate Approach:
   + Using SWAGGER for API Specification
-  + RAML / SWAGGER / APIGEE has now joined hands and is now working towards OAS enhancement, so good thing to start using RAML
+  + RAML / SWAGGER / Apiary has now joined hands and is now working towards OAS enhancement, so good thing to start using RAML
   + SWAGGER has wide range of tools, and very handy auto generation tools to come up with our Skeleton Framework in case of JAVA.
   + If we are a Java Workshop or more Java Developers, we can implement the same using SpringBoot.
 
