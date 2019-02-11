@@ -15,46 +15,9 @@ uses:
   collectionLibrary: /library/ResourceTypeLibrary.raml
   tr: /library/TraitsLibrary.raml
 
-# resourceTypes:
-#   collection: !include ../resourcetypes/collection.raml
-
-# traits:
-#   hasRequestCollection: !include  traits/hasRequestCollection.raml
-#   hasResponseCollection: !include  traits/hasResponseCollection.raml
-
-# types:
-#   ShoppingCartMemberType: !include datatypes/shopping_cart_datatype_collection.raml
-
-# resourceTypes:
-#   collection:
-#     usage: This resourceType could be used for a generic collection driven operations of related topology
-#     description: Collection of <<resourcePathName>>
-#     displayName: Shopping Cart Collection ResourceType
-#     post:
-#       description: Creates a new <<resourcePathName | !singularize | !uppercase>>
-#       is: [hasRequestCollection, hasResponseCollection]
-
-# traits:
-#   hasRequestCollection:
-#     body:
-#       application/json:
-#         #type: shoppingCartTypes.shoppingCartCollection
-#         type: << typeName >>
-#         example: !include examples/ShoppingCarts.json
-#   hasResponseCollection:
-#     responses:
-#       200:
-#         body:
-#           application/json:
-#             examples: !include examples/ShoppingCartSuccessExample.raml
-
-
-
 /shoppingCarts:
   type: 
     collectionLibrary.collection:
-    #collection:
-      #typeName: shoppingCartTypes.shoppingCartCollection
   post:
 
   /{shoppingCartId}:
